@@ -23,6 +23,50 @@ export interface TrelloList {
   pos: number;
 }
 
+export interface TrelloLabel {
+  id: string;
+  idBoard: string;
+  name: string;
+  color: string;
+}
+
+export interface TrelloMember {
+  id: string;
+  fullName: string;
+  username: string;
+}
+
+export interface TrelloChecklist {
+  id: string;
+  name: string;
+  idCard: string;
+  pos: number;
+  checkItems: Array<{
+    id: string;
+    name: string;
+    state: 'complete' | 'incomplete';
+    pos: number;
+  }>;
+}
+
+export interface TrelloAttachment {
+  id: string;
+  name: string;
+  url: string;
+  bytes?: number;
+  date: string;
+  idMember: string;
+  mimeType?: string;
+  previews?: Array<{
+    id: string;
+    scaled: boolean;
+    url: string;
+    bytes: number;
+    height: number;
+    width: number;
+  }>;
+}
+
 export interface TrelloCard {
   id: string;
   name: string;
@@ -33,12 +77,24 @@ export interface TrelloCard {
   url: string;
   shortUrl: string;
   due?: string | null;
-  labels?: Array<{
-    id: string;
-    name: string;
-    color: string;
-  }>;
+  dueComplete?: boolean;
+  labels?: TrelloLabel[];
   idMembers?: string[];
+  members?: TrelloMember[];
+  checklists?: TrelloChecklist[];
+  attachments?: TrelloAttachment[];
+  dateLastActivity?: string;
+  idChecklists?: string[];
+  badges?: {
+    attachments: number;
+    checkItems: number;
+    checkItemsChecked: number;
+    comments: number;
+    description: boolean;
+    due?: string | null;
+    dueComplete: boolean;
+    votes: number;
+  };
 }
 
 export interface TrelloComment {

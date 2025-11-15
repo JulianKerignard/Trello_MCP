@@ -8,6 +8,7 @@ import type {
   TrelloBoard,
   TrelloList,
   TrelloCard,
+  TrelloLabel,
   TrelloComment,
   TrelloAPIError,
   TrelloSearchResult,
@@ -286,5 +287,157 @@ export class TrelloClient {
     });
 
     return response.data.cards || [];
+  }
+
+  /**
+   * Update card name/title
+   */
+  async updateCardName(cardId: string, name: string): Promise<TrelloCard> {
+    const response = await this.axiosInstance.put<TrelloCard>(
+      `/cards/${cardId}`,
+      { name }
+    );
+    return response.data;
+  }
+
+  /**
+   * Get full card details with all nested objects
+   * @param cardId - Card ID
+   * @param fields - Fields to include (default: 'all')
+   */
+  async getCardDetails(
+    cardId: string,
+    fields: string = 'all'
+  ): Promise<TrelloCard> {
+    const response = await this.axiosInstance.get<TrelloCard>(
+      `/cards/${cardId}`,
+      {
+        params: {
+          fields,
+          members: 'true',
+          member_fields: 'fullName,username',
+          checklists: 'all',
+          attachments: 'true',
+          customFieldItems: 'true'
+        }
+      }
+    );
+    return response.data;
+  }
+
+  // ========== Label Methods ==========
+
+  /**
+   * Get all labels on a board
+   */
+  async getLabels(boardId: string): Promise<TrelloLabel[]> {
+    const response = await this.axiosInstance.get<TrelloLabel[]>(
+      `/boards/${boardId}/labels`
+    );
+    return response.data;
+  }
+
+  /**
+   * Create a new label on a board
+   */
+  async createLabel(
+    boardId: string,
+    name: string,
+    color: string
+  ): Promise<TrelloLabel> {
+    const response = await this.axiosInstance.post<TrelloLabel>(
+      `/boards/${boardId}/labels`,
+      { name, color }
+    );
+    return response.data;
+  }
+
+  /**
+   * Update a label
+   */
+  async updateLabel(
+    labelId: string,
+    updates: { name?: string; color?: string }
+  ): Promise<TrelloLabel> {
+    const response = await this.axiosInstance.put<TrelloLabel>(
+      `/labels/${labelId}`,
+      updates
+    );
+    return response.data;
+  }
+
+  /**
+   * Add a label to a card
+   * IMPORTANT: Use POST to ADD, not PUT (PUT replaces all labels)
+   */
+  async addLabelToCard(cardId: string, labelId: string): Promise<void> {
+    await this.axiosInstance.post(
+      `/cards/${cardId}/idLabels`,
+      { value: labelId }
+    );
+  }
+
+  /**
+   * Remove a label from a card
+   */
+  async removeLabelFromCard(cardId: string, labelId: string): Promise<void> {
+    await this.axiosInstance.delete(
+      `/cards/${cardId}/idLabels/${labelId}`
+    );
+  }
+
+  // ========== Due Date Methods ==========
+
+  /**
+   * Set due date on a card
+   * @param cardId - Card ID
+   * @param dueDate - ISO 8601 date string (e.g., "2025-12-31T23:59:59.999Z")
+   */
+  async setCardDueDate(cardId: string, dueDate: string): Promise<TrelloCard> {
+    const response = await this.axiosInstance.put<TrelloCard>(
+      `/cards/${cardId}`,
+      { due: dueDate }
+    );
+    return response.data;
+  }
+
+  /**
+   * Remove due date from a card
+   */
+  async removeCardDueDate(cardId: string): Promise<TrelloCard> {
+    const response = await this.axiosInstance.put<TrelloCard>(
+      `/cards/${cardId}`,
+      { due: null }
+    );
+    return response.data;
+  }
+
+  /**
+   * Mark due date as complete (or incomplete)
+   */
+  async markDueDateComplete(
+    cardId: string,
+    complete: boolean = true
+  ): Promise<TrelloCard> {
+    const response = await this.axiosInstance.put<TrelloCard>(
+      `/cards/${cardId}`,
+      { dueComplete: complete }
+    );
+    return response.data;
+  }
+
+  /**
+   * Get all cards on a board, sorted by due date
+   */
+  async getCardsByDueDate(boardId: string): Promise<TrelloCard[]> {
+    const cards = await this.getBoardCards(boardId);
+    // Filter cards with due dates and sort
+    return cards
+      .filter(card => card.due !== null && card.due !== undefined)
+      .sort((a, b) => {
+        const dateA = new Date(a.due!).getTime();
+        const dateB = new Date(b.due!).getTime();
+        return dateA - dateB; // Ascending order (earliest first)
+      });
   }
 }

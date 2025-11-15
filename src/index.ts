@@ -278,6 +278,213 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ['cardId']
         }
+      },
+      // v1.4 - New card tools
+      {
+        name: 'unarchive_card',
+        description: 'Désarchive une carte Trello (set closed to false)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte à désarchiver (requis, 24 caractères)'
+            }
+          },
+          required: ['cardId']
+        }
+      },
+      {
+        name: 'update_card_name',
+        description: 'Modifie le nom/titre d\'une carte Trello',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte à renommer (requis, 24 caractères)'
+            },
+            name: {
+              type: 'string',
+              description: 'Nouveau nom de la carte (requis)'
+            }
+          },
+          required: ['cardId', 'name']
+        }
+      },
+      {
+        name: 'get_card_details',
+        description: 'Récupère tous les détails d\'une carte (membres, labels, checklists, dates, pièces jointes, etc.)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte (requis, 24 caractères)'
+            }
+          },
+          required: ['cardId']
+        }
+      },
+      // v1.4 - Label tools
+      {
+        name: 'list_labels',
+        description: 'Liste tous les labels d\'un board Trello',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            boardId: {
+              type: 'string',
+              description: 'ID du board (requis, 24 caractères)'
+            }
+          },
+          required: ['boardId']
+        }
+      },
+      {
+        name: 'create_label',
+        description: 'Crée un nouveau label sur un board Trello (pour catégorisation, priorités P1-P4, etc.)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            boardId: {
+              type: 'string',
+              description: 'ID du board (requis, 24 caractères)'
+            },
+            name: {
+              type: 'string',
+              description: 'Nom du label (ex: "P1 - Critique", "Bug", "Feature")'
+            },
+            color: {
+              type: 'string',
+              description: 'Couleur du label: red, orange, yellow, green, blue, purple, pink, sky, lime, black, null'
+            }
+          },
+          required: ['boardId', 'name', 'color']
+        }
+      },
+      {
+        name: 'update_label',
+        description: 'Modifie un label existant (nom et/ou couleur)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            labelId: {
+              type: 'string',
+              description: 'ID du label à modifier (requis, 24 caractères)'
+            },
+            name: {
+              type: 'string',
+              description: 'Nouveau nom du label (optionnel)'
+            },
+            color: {
+              type: 'string',
+              description: 'Nouvelle couleur du label (optionnel)'
+            }
+          },
+          required: ['labelId']
+        }
+      },
+      {
+        name: 'add_label_to_card',
+        description: 'Ajoute un label à une carte Trello',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte (requis, 24 caractères)'
+            },
+            labelId: {
+              type: 'string',
+              description: 'ID du label à ajouter (requis, 24 caractères)'
+            }
+          },
+          required: ['cardId', 'labelId']
+        }
+      },
+      {
+        name: 'remove_label_from_card',
+        description: 'Retire un label d\'une carte Trello',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte (requis, 24 caractères)'
+            },
+            labelId: {
+              type: 'string',
+              description: 'ID du label à retirer (requis, 24 caractères)'
+            }
+          },
+          required: ['cardId', 'labelId']
+        }
+      },
+      // v1.4 - Due date tools
+      {
+        name: 'set_card_due_date',
+        description: 'Définit une date limite (deadline) sur une carte Trello',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte (requis, 24 caractères)'
+            },
+            dueDate: {
+              type: 'string',
+              description: 'Date limite au format ISO 8601 (ex: "2025-12-31T23:59:59.999Z")'
+            }
+          },
+          required: ['cardId', 'dueDate']
+        }
+      },
+      {
+        name: 'remove_card_due_date',
+        description: 'Retire la date limite d\'une carte Trello',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte (requis, 24 caractères)'
+            }
+          },
+          required: ['cardId']
+        }
+      },
+      {
+        name: 'mark_due_date_complete',
+        description: 'Marque la date limite d\'une carte comme complétée (ou non complétée)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cardId: {
+              type: 'string',
+              description: 'ID de la carte (requis, 24 caractères)'
+            },
+            complete: {
+              type: 'boolean',
+              description: 'true pour marquer comme complété, false sinon (défaut: true)'
+            }
+          },
+          required: ['cardId']
+        }
+      },
+      {
+        name: 'list_cards_by_due_date',
+        description: 'Liste toutes les cartes d\'un board qui ont une date limite, triées par échéance (les plus urgentes en premier)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            boardId: {
+              type: 'string',
+              description: 'ID du board (requis, 24 caractères)'
+            }
+          },
+          required: ['boardId']
+        }
       }
     ]
   };
@@ -641,6 +848,340 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     }
 
+    // ========== v1.4 - New Card Tools ==========
+
+    if (name === 'unarchive_card') {
+      const { cardId } = args as { cardId: string };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+
+      const card = await trelloClient.unarchiveCard(cardId);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `Carte désarchivée avec succès! ✅\n\n` +
+                `ID: ${card.id}\n` +
+                `Nom: ${card.name}\n` +
+                `Statut: Réactivée (closed=false)\n` +
+                `URL: ${card.url}`
+        }]
+      };
+    }
+
+    if (name === 'update_card_name') {
+      const { cardId, name: newName } = args as { cardId: string; name: string };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+      if (!newName || newName.trim().length === 0) {
+        throw new Error('Le nouveau nom ne peut pas être vide');
+      }
+
+      const card = await trelloClient.updateCardName(cardId, newName.trim());
+
+      return {
+        content: [{
+          type: 'text',
+          text: `Nom de la carte mis à jour! ✅\n\n` +
+                `Nouveau nom: ${card.name}\n` +
+                `ID: ${card.id}\n` +
+                `URL: ${card.url}`
+        }]
+      };
+    }
+
+    if (name === 'get_card_details') {
+      const { cardId } = args as { cardId: string };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+
+      const card = await trelloClient.getCardDetails(cardId);
+
+      // Format detailed output
+      let output = `📋 Détails de la carte\n\n`;
+      output += `**Informations générales:**\n`;
+      output += `- Nom: ${card.name}\n`;
+      output += `- ID: ${card.id}\n`;
+      output += `- Description: ${card.desc || '(aucune)'}\n`;
+      output += `- Statut: ${card.closed ? 'Archivée ❌' : 'Active ✅'}\n`;
+      output += `- URL: ${card.url}\n\n`;
+
+      if (card.due) {
+        output += `**📅 Date limite:**\n`;
+        output += `- Due: ${new Date(card.due).toLocaleString('fr-FR')}\n`;
+        output += `- Complété: ${card.dueComplete ? 'Oui ✅' : 'Non ⏳'}\n\n`;
+      }
+
+      if (card.labels && card.labels.length > 0) {
+        output += `**🏷️ Labels:**\n`;
+        card.labels.forEach(label => {
+          output += `- ${label.name || label.color} (${label.color})\n`;
+        });
+        output += `\n`;
+      }
+
+      if (card.idMembers && card.idMembers.length > 0) {
+        output += `**👥 Membres assignés:** ${card.idMembers.length}\n\n`;
+      }
+
+      if (card.checklists && card.checklists.length > 0) {
+        output += `**☑️ Checklists:** ${card.checklists.length}\n`;
+        card.checklists.forEach(checklist => {
+          const completed = checklist.checkItems.filter(item => item.state === 'complete').length;
+          output += `- ${checklist.name}: ${completed}/${checklist.checkItems.length} complétés\n`;
+        });
+        output += `\n`;
+      }
+
+      if (card.attachments && card.attachments.length > 0) {
+        output += `**📎 Pièces jointes:** ${card.attachments.length}\n\n`;
+      }
+
+      return {
+        content: [{ type: 'text', text: output }]
+      };
+    }
+
+    // ========== v1.4 - Label Tools ==========
+
+    if (name === 'list_labels') {
+      const { boardId } = args as { boardId: string };
+
+      if (!boardId || boardId.length !== 24) {
+        throw new Error('ID de board invalide (24 caractères requis)');
+      }
+
+      const labels = await trelloClient.getLabels(boardId);
+
+      if (labels.length === 0) {
+        return {
+          content: [{
+            type: 'text',
+            text: 'Aucun label trouvé sur ce board.'
+          }]
+        };
+      }
+
+      let output = `🏷️ Labels du board (${labels.length})\n\n`;
+      labels.forEach(label => {
+        output += `- ${label.name || '(sans nom)'} - ${label.color} (ID: ${label.id})\n`;
+      });
+
+      return {
+        content: [{ type: 'text', text: output }]
+      };
+    }
+
+    if (name === 'create_label') {
+      const { boardId, name: labelName, color } = args as { boardId: string; name: string; color: string };
+
+      if (!boardId || boardId.length !== 24) {
+        throw new Error('ID de board invalide (24 caractères requis)');
+      }
+      if (!labelName || labelName.trim().length === 0) {
+        throw new Error('Le nom du label ne peut pas être vide');
+      }
+      if (!color) {
+        throw new Error('La couleur du label est requise');
+      }
+
+      const label = await trelloClient.createLabel(boardId, labelName.trim(), color);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `Label créé avec succès! ✅\n\n` +
+                `Nom: ${label.name}\n` +
+                `Couleur: ${label.color}\n` +
+                `ID: ${label.id}\n\n` +
+                `💡 Utilisez add_label_to_card pour l'ajouter à une carte.`
+        }]
+      };
+    }
+
+    if (name === 'update_label') {
+      const { labelId, name: newName, color: newColor } = args as { labelId: string; name?: string; color?: string };
+
+      if (!labelId || labelId.length !== 24) {
+        throw new Error('ID de label invalide (24 caractères requis)');
+      }
+      if (!newName && !newColor) {
+        throw new Error('Au moins un paramètre (name ou color) doit être fourni');
+      }
+
+      const updates: { name?: string; color?: string } = {};
+      if (newName) updates.name = newName.trim();
+      if (newColor) updates.color = newColor;
+
+      const label = await trelloClient.updateLabel(labelId, updates);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `Label mis à jour! ✅\n\n` +
+                `Nom: ${label.name}\n` +
+                `Couleur: ${label.color}\n` +
+                `ID: ${label.id}`
+        }]
+      };
+    }
+
+    if (name === 'add_label_to_card') {
+      const { cardId, labelId } = args as { cardId: string; labelId: string };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+      if (!labelId || labelId.length !== 24) {
+        throw new Error('ID de label invalide (24 caractères requis)');
+      }
+
+      await trelloClient.addLabelToCard(cardId, labelId);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `Label ajouté à la carte avec succès! ✅\n\n` +
+                `Carte ID: ${cardId}\n` +
+                `Label ID: ${labelId}`
+        }]
+      };
+    }
+
+    if (name === 'remove_label_from_card') {
+      const { cardId, labelId } = args as { cardId: string; labelId: string };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+      if (!labelId || labelId.length !== 24) {
+        throw new Error('ID de label invalide (24 caractères requis)');
+      }
+
+      await trelloClient.removeLabelFromCard(cardId, labelId);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `Label retiré de la carte avec succès! ✅\n\n` +
+                `Carte ID: ${cardId}\n` +
+                `Label ID: ${labelId}`
+        }]
+      };
+    }
+
+    // ========== v1.4 - Due Date Tools ==========
+
+    if (name === 'set_card_due_date') {
+      const { cardId, dueDate } = args as { cardId: string; dueDate: string };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+
+      // Validate date format (ISO 8601)
+      const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+      if (!dateRegex.test(dueDate)) {
+        throw new Error(
+          'Format de date invalide. Utilisez le format ISO 8601:\n' +
+          '"YYYY-MM-DDTHH:mm:ss.sssZ"\n' +
+          'Exemple: "2025-12-31T23:59:59.999Z"'
+        );
+      }
+
+      const card = await trelloClient.setCardDueDate(cardId, dueDate);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `📅 Date limite définie!\n\n` +
+                `Carte: ${card.name}\n` +
+                `Due: ${new Date(card.due!).toLocaleString('fr-FR')}\n` +
+                `URL: ${card.url}`
+        }]
+      };
+    }
+
+    if (name === 'remove_card_due_date') {
+      const { cardId } = args as { cardId: string };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+
+      const card = await trelloClient.removeCardDueDate(cardId);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `📅 Date limite retirée!\n\n` +
+                `Carte: ${card.name}\n` +
+                `URL: ${card.url}`
+        }]
+      };
+    }
+
+    if (name === 'mark_due_date_complete') {
+      const { cardId, complete } = args as { cardId: string; complete?: boolean };
+
+      if (!cardId || cardId.length !== 24) {
+        throw new Error('ID de carte invalide (24 caractères requis)');
+      }
+
+      const isComplete = complete !== undefined ? complete : true;
+      const card = await trelloClient.markDueDateComplete(cardId, isComplete);
+
+      return {
+        content: [{
+          type: 'text',
+          text: `📅 Statut de la date limite mis à jour!\n\n` +
+                `Carte: ${card.name}\n` +
+                `Complété: ${isComplete ? 'Oui ✅' : 'Non ⏳'}\n` +
+                `URL: ${card.url}`
+        }]
+      };
+    }
+
+    if (name === 'list_cards_by_due_date') {
+      const { boardId } = args as { boardId: string };
+
+      if (!boardId || boardId.length !== 24) {
+        throw new Error('ID de board invalide (24 caractères requis)');
+      }
+
+      const cards = await trelloClient.getCardsByDueDate(boardId);
+
+      if (cards.length === 0) {
+        return {
+          content: [{
+            type: 'text',
+            text: 'Aucune carte avec date limite trouvée sur ce board.'
+          }]
+        };
+      }
+
+      let output = `📅 Cartes avec date limite (${cards.length}) - Triées par échéance\n\n`;
+      cards.forEach((card, index) => {
+        const dueDate = new Date(card.due!);
+        const isOverdue = dueDate < new Date() && !card.dueComplete;
+        const status = card.dueComplete ? '✅' : isOverdue ? '🔴 EN RETARD' : '⏳';
+
+        output += `${index + 1}. ${card.name}\n`;
+        output += `   Due: ${dueDate.toLocaleString('fr-FR')} ${status}\n`;
+        output += `   URL: ${card.shortUrl}\n\n`;
+      });
+
+      return {
+        content: [{ type: 'text', text: output }]
+      };
+    }
+
     throw new Error(`Outil inconnu: ${name}`);
 
   } catch (error: any) {
@@ -663,8 +1204,8 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error('✅ Trello MCP Server v1.0.0 démarré avec succès');
-  console.error('📋 12 outils disponibles: boards (2), lists (2), cards (8)');
+  console.error('✅ Trello MCP Server v1.4.0 démarré avec succès');
+  console.error('📋 24 outils disponibles: boards (2), lists (2), cards (11), labels (5), dates (4)');
   console.error('🔐 Authentifié avec l\'API Trello');
 }
 

@@ -4,7 +4,7 @@
 
 **Intégration puissante de Trello pour Claude Desktop via le Model Context Protocol**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/JulianKerignard/Trello_MCP)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/JulianKerignard/Trello_MCP)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -29,7 +29,7 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 - **🤖 Automatisation naturelle** : Demandez à Claude de gérer Trello pour vous
 - **🔒 Sécurisé** : Vos credentials restent locaux
 - **⚡ Rapide** : TypeScript compilé pour des performances optimales
-- **🎨 Flexible** : 12 outils couvrant tous les besoins essentiels
+- **🎨 Flexible** : 24 outils couvrant tous les besoins essentiels
 
 ---
 
@@ -49,7 +49,7 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 | `list_trello_lists` | Liste les colonnes d'un board |
 | `create_trello_list` | Crée une nouvelle colonne |
 
-### 🎯 Gestion des Cards (8 outils)
+### 🎯 Gestion des Cards (11 outils)
 
 | Outil | Description |
 |-------|-------------|
@@ -59,8 +59,30 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 | `move_trello_card` | Déplace une carte entre lists |
 | `search_trello_cards` | Recherche des cartes |
 | `update_card_description` | Modifie la description |
+| `update_card_name` | Modifie le nom d'une carte |
+| `get_card_details` | Détails complets d'une carte |
 | `archive_card` | Archive une carte (réversible) |
+| `unarchive_card` | Désarchive une carte |
 | `delete_card` | Supprime définitivement ⚠️ |
+
+### 🏷️ Gestion des Labels (5 outils)
+
+| Outil | Description |
+|-------|-------------|
+| `list_labels` | Liste tous les labels d'un board |
+| `create_label` | Crée un nouveau label |
+| `update_label` | Modifie un label existant |
+| `add_label_to_card` | Ajoute un label à une carte |
+| `remove_label_from_card` | Retire un label d'une carte |
+
+### 📅 Gestion des Dates (4 outils)
+
+| Outil | Description |
+|-------|-------------|
+| `set_card_due_date` | Définit une date limite |
+| `remove_card_due_date` | Supprime la date limite |
+| `mark_due_date_complete` | Marque la date comme complétée |
+| `list_cards_by_due_date` | Liste les cartes triées par date |
 
 ---
 
@@ -275,25 +297,25 @@ Ce serveur utilise l'[API REST Trello v1](https://developer.atlassian.com/cloud/
 
 **Consultez notre board Trello pour suivre en temps réel les fonctionnalités terminées, en cours de développement et prévues !**
 
-### Version actuelle : 1.0.0 ✅
+### Version actuelle : 1.4.0 ✅
 
-**Toutes les fonctionnalités de la v1.0 sont disponibles :**
+**Toutes les fonctionnalités de la v1.4 sont disponibles :**
 - ✅ Gestion complète des Boards (2 outils)
 - ✅ Gestion complète des Lists (2 outils)
-- ✅ Gestion complète des Cards (8 outils)
+- ✅ Gestion complète des Cards (11 outils)
   - CRUD de base (créer, lire, commenter)
-  - Déplacement de cartes
-  - Recherche avancée
-  - Modification de descriptions
+  - Déplacement et recherche de cartes
+  - Modification (nom, description)
   - Archivage et suppression
-
-### 🚧 En cours de développement (v1.4)
-
-- 🔄 `unarchive_card` - Désarchiver une carte
-- ✏️ `update_card_name` - Modifier le nom d'une carte
-- 🔍 `get_card_details` - Détails complets d'une carte
-- 🏷️ **Gestion des Labels + Priorités (P1/P2/P3/P4)**
-- 📅 **Gestion des Dates** (due dates, deadlines)
+  - Détails complets avec membres, checklists, attachments
+- ✅ Gestion des Labels (5 outils)
+  - Créer, modifier, supprimer des labels
+  - Ajouter/retirer des labels sur les cartes
+  - Support des priorités P1/P2/P3/P4
+- ✅ Gestion des Dates (4 outils)
+  - Définir et supprimer des dates limites
+  - Marquer comme complété
+  - Tri par date d'échéance
 
 ### 📋 Prochaines versions (v2.0)
 
