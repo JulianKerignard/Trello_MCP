@@ -663,7 +663,7 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error('✅ Trello MCP Server v1.3.0 démarré avec succès');
+  console.error('✅ Trello MCP Server v1.0.0 démarré avec succès');
   console.error('📋 12 outils disponibles: boards (2), lists (2), cards (8)');
   console.error('🔐 Authentifié avec l\'API Trello');
 }

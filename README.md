@@ -4,7 +4,7 @@
 
 **Intégration puissante de Trello pour Claude Desktop via le Model Context Protocol**
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/yourusername/trello-mcp-server)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/JulianKerignard/Trello_MCP)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -51,16 +51,16 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 
 ### 🎯 Gestion des Cards (8 outils)
 
-| Outil | Description | Version |
-|-------|-------------|---------|
-| `list_trello_cards` | Liste les cartes d'une list | v1.0 |
-| `create_trello_card` | Crée une nouvelle carte | v1.0 |
-| `add_card_comment` | Ajoute un commentaire | v1.0 |
-| `move_trello_card` | Déplace une carte entre lists | v1.1 ⭐ |
-| `search_trello_cards` | Recherche des cartes | v1.1 ⭐ |
-| `update_card_description` | Modifie la description | v1.2 ⭐ |
-| `archive_card` | Archive une carte (réversible) | v1.3 ⭐ |
-| `delete_card` | Supprime définitivement | v1.3 ⚠️ |
+| Outil | Description |
+|-------|-------------|
+| `list_trello_cards` | Liste les cartes d'une list |
+| `create_trello_card` | Crée une nouvelle carte |
+| `add_card_comment` | Ajoute un commentaire |
+| `move_trello_card` | Déplace une carte entre lists |
+| `search_trello_cards` | Recherche des cartes |
+| `update_card_description` | Modifie la description |
+| `archive_card` | Archive une carte (réversible) |
+| `delete_card` | Supprime définitivement ⚠️ |
 
 ---
 
@@ -77,8 +77,8 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 
 ```bash
 # Cloner le repository
-git clone https://github.com/yourusername/trello-mcp-server.git
-cd trello-mcp-server
+git clone https://github.com/JulianKerignard/Trello_MCP.git
+cd Trello_MCP
 
 # Installer les dépendances
 npm install
@@ -234,7 +234,7 @@ Ouvrez votre navigateur à l'URL affichée pour tester chaque outil.
 npm run dev
 
 # Le serveur affichera :
-# ✅ Trello MCP Server v1.3.0 démarré avec succès
+# ✅ Trello MCP Server v1.0.0 démarré avec succès
 # 📋 12 outils disponibles: boards (2), lists (2), cards (8)
 # 🔐 Authentifié avec l'API Trello
 ```
@@ -271,27 +271,38 @@ Ce serveur utilise l'[API REST Trello v1](https://developer.atlassian.com/cloud/
 
 ## 🗺️ Roadmap
 
-### Version actuelle : 1.3.0 ✅
+### 📋 [Voir la Roadmap complète sur Trello](https://trello.com/invite/b/691872c259e5684db478c009/ATTI1878973b0e7e6689fe8c4e1d659a20b86818E860/trellomcproadmap)
 
-- [x] CRUD boards, lists, cards
-- [x] Déplacement de cartes
-- [x] Recherche de cartes
-- [x] Modification de descriptions
-- [x] Archivage et suppression
+**Consultez notre board Trello pour suivre en temps réel les fonctionnalités terminées, en cours de développement et prévues !**
 
-### Prochaines versions
+### Version actuelle : 1.0.0 ✅
 
-**v1.4** (prévu)
-- [ ] `unarchive_card` - Désarchiver une carte
-- [ ] `update_card_name` - Modifier le nom d'une carte
-- [ ] `get_card_details` - Détails complets d'une carte
+**Toutes les fonctionnalités de la v1.0 sont disponibles :**
+- ✅ Gestion complète des Boards (2 outils)
+- ✅ Gestion complète des Lists (2 outils)
+- ✅ Gestion complète des Cards (8 outils)
+  - CRUD de base (créer, lire, commenter)
+  - Déplacement de cartes
+  - Recherche avancée
+  - Modification de descriptions
+  - Archivage et suppression
 
-**v2.0** (futur)
-- [ ] Gestion des labels
-- [ ] Gestion des membres
-- [ ] Gestion des checklists
-- [ ] Custom fields
-- [ ] Webhooks
+### 🚧 En cours de développement (v1.4)
+
+- 🔄 `unarchive_card` - Désarchiver une carte
+- ✏️ `update_card_name` - Modifier le nom d'une carte
+- 🔍 `get_card_details` - Détails complets d'une carte
+- 🏷️ **Gestion des Labels + Priorités (P1/P2/P3/P4)**
+- 📅 **Gestion des Dates** (due dates, deadlines)
+
+### 📋 Prochaines versions (v2.0)
+
+- 👥 Gestion des Membres (assignation)
+- ☑️ Gestion des Checklists (sous-tâches)
+- 📎 Pièces Jointes (fichiers et liens)
+- ⚡ Opérations en Masse (bulk)
+
+Consultez la [board Roadmap](https://trello.com/invite/b/691872c259e5684db478c009/ATTI1878973b0e7e6689fe8c4e1d659a20b86818E860/trellomcproadmap) pour voir les détails et priorités de chaque feature.
 
 ---
 
@@ -301,7 +312,7 @@ Les contributions sont les bienvenues ! Voici comment contribuer :
 
 ### Rapporter un bug
 
-Ouvrez une [issue](https://github.com/yourusername/trello-mcp-server/issues) avec :
+Ouvrez une [issue](https://github.com/JulianKerignard/Trello_MCP/issues) avec :
 - Description du problème
 - Étapes pour reproduire
 - Version de Node.js et du serveur
@@ -309,7 +320,7 @@ Ouvrez une [issue](https://github.com/yourusername/trello-mcp-server/issues) ave
 
 ### Proposer une fonctionnalité
 
-Ouvrez une [issue](https://github.com/yourusername/trello-mcp-server/issues) avec :
+Ouvrez une [issue](https://github.com/JulianKerignard/Trello_MCP/issues) avec :
 - Description de la fonctionnalité
 - Cas d'usage
 - Proposition d'implémentation (optionnel)
@@ -344,7 +355,8 @@ Besoin d'aide ?
 
 - 📖 [Documentation MCP](https://modelcontextprotocol.io)
 - 📖 [API Trello](https://developer.atlassian.com/cloud/trello/rest/)
-- 💬 [Issues GitHub](https://github.com/yourusername/trello-mcp-server/issues)
+- 💬 [Issues GitHub](https://github.com/JulianKerignard/Trello_MCP/issues)
+- 🗺️ [Roadmap Trello](https://trello.com/invite/b/691872c259e5684db478c009/ATTI1878973b0e7e6689fe8c4e1d659a20b86818E860/trellomcproadmap)
 
 ---
 
