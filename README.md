@@ -88,14 +88,37 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 
 ## 📦 Installation
 
-### Prérequis
+### 🚀 Installation Rapide avec Bundle MCPB (Recommandé)
 
+**Installation en 1 clic pour Claude Desktop !**
+
+1. **Télécharger le bundle** : [Trello_MCP.mcpb](https://github.com/JulianKerignard/Trello_MCP/releases/latest/download/Trello_MCP.mcpb) (3.0 MB)
+
+2. **Installer** :
+   - **Option A** : Double-cliquer sur le fichier `.mcpb` (macOS/Windows)
+   - **Option B** : Dans Claude Desktop → Settings → Extensions → Advanced → Install from file
+
+3. **Configurer vos credentials Trello** :
+   - API Key : Obtenir sur https://trello.com/power-ups/admin
+   - API Token : Cliquer sur "Token" et autoriser avec permissions read/write
+
+4. **C'est tout !** 🎉 Le serveur MCP est installé et prêt à l'emploi.
+
+**Vérification** :
+```
+"Liste tous mes boards Trello" → Claude affiche vos boards
+```
+
+---
+
+### 🛠️ Installation Manuelle (Développeurs)
+
+**Prérequis** :
 - [Node.js](https://nodejs.org/) 18 ou supérieur
 - [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
 - Un compte [Trello](https://trello.com)
-- [Claude Desktop](https://claude.ai/download) (optionnel mais recommandé)
 
-### 🔧 Installation rapide
+**Étapes** :
 
 ```bash
 # Cloner le repository
@@ -103,7 +126,7 @@ git clone https://github.com/JulianKerignard/Trello_MCP.git
 cd Trello_MCP
 
 # Installer les dépendances
-npm install
+npm install --production
 
 # Compiler le projet
 npm run build
