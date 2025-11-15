@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "trello": {
+      "command": "node",
+      "args": [
+        "/Volumes/PS2000W/Autre_Logiciels/MCP/Trello_MCP/build/index.js"
+      ],
+      "env": {
+        "TRELLO_API_KEY": "votre_api_key_ici",
+        "TRELLO_API_TOKEN": "votre_token_ici"
+      }
+    }
+  }
+}
