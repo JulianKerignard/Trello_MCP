@@ -1,5 +1,5 @@
 {
-  "name": "trello-mcp-server",
+  "name": "mcp-trello-advanced",
   "version": "2.0.1",
   "description": "MCP Server for Trello API integration",
   "type": "module",
@@ -27,10 +27,27 @@
   "keywords": [
     "mcp",
     "trello",
-    "model-context-protocol"
+    "model-context-protocol",
+    "trello-api",
+    "claude",
+    "ai-tools"
   ],
   "author": "Julian Kerignard",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JulianKerignard/Trello_MCP.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JulianKerignard/Trello_MCP/issues"
+  },
+  "homepage": "https://github.com/JulianKerignard/Trello_MCP#readme",
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.22.0",
     "axios": "^1.13.2",

@@ -1,0 +1,49 @@
+# Development files
+src/
+*.test.ts
+*.spec.ts
+tsconfig.json
+vitest.config.ts
+eslint.config.js
+.prettierrc
+.prettierignore
+
+# Test and coverage
+coverage/
+.nyc_output/
+test/
+tests/
+**/__tests__/
+
+# Documentation (dev only)
+CHECKUP_REPORT*.md
+REFACTORING_PROGRESS.md
+COVERAGE_REPORT.md
+examples/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.log
+npm-debug.log*
+*.tsbuildinfo
+.mcpb
+
+# Git
+.git/
+.gitignore
+.gitattributes
