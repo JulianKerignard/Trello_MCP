@@ -36,17 +36,20 @@ export interface TrelloMember {
   username: string;
 }
 
+export interface TrelloCheckItem {
+  id: string;
+  name: string;
+  state: 'complete' | 'incomplete';
+  pos: number;
+  idChecklist: string;
+}
+
 export interface TrelloChecklist {
   id: string;
   name: string;
   idCard: string;
   pos: number;
-  checkItems: Array<{
-    id: string;
-    name: string;
-    state: 'complete' | 'incomplete';
-    pos: number;
-  }>;
+  checkItems: TrelloCheckItem[];
 }
 
 export interface TrelloAttachment {

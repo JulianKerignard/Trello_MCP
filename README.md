@@ -4,7 +4,7 @@
 
 **Intégration puissante de Trello pour Claude Desktop via le Model Context Protocol**
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/JulianKerignard/Trello_MCP)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/JulianKerignard/Trello_MCP)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -29,7 +29,8 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 - **🤖 Automatisation naturelle** : Demandez à Claude de gérer Trello pour vous
 - **🔒 Sécurisé** : Vos credentials restent locaux
 - **⚡ Rapide** : TypeScript compilé pour des performances optimales
-- **🎨 Flexible** : 24 outils couvrant tous les besoins essentiels
+- **🎨 Flexible** : 33 outils couvrant tous les besoins essentiels
+- **🏗️ Architecture moderne** : Pattern Factory + Registry pour maintenabilité optimale (v2.0.0)
 
 ---
 
@@ -83,6 +84,25 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 | `remove_card_due_date` | Supprime la date limite |
 | `mark_due_date_complete` | Marque la date comme complétée |
 | `list_cards_by_due_date` | Liste les cartes triées par date |
+
+### ✅ Gestion des Checklists (5 outils)
+
+| Outil | Description |
+|-------|-------------|
+| `add_checklist_to_card` | Crée une nouvelle checklist |
+| `add_checklist_item` | Ajoute un item à une checklist |
+| `check_checklist_item` | Coche/décoche un item |
+| `get_checklist_progress` | Récupère la progression détaillée |
+| `delete_checklist` | Supprime une checklist ⚠️ |
+
+### 👥 Gestion des Membres (4 outils)
+
+| Outil | Description |
+|-------|-------------|
+| `get_board_members` | Liste tous les membres d'un board |
+| `add_member_to_card` | Assigne un membre à une carte |
+| `remove_member_from_card` | Retire l'assignation d'un membre |
+| `get_member_cards` | Liste les cartes assignées à un membre |
 
 ---
 
@@ -237,29 +257,67 @@ Vous : "Supprime définitivement la carte 'Spam'"
 
 ## 🛠️ Développement
 
-### Structure du projet
+### Structure du projet (v2.0.0 - Architecture Handler Registry)
 
 ```
 trello-mcp-server/
 ├── src/
-│   ├── index.ts           # Point d'entrée du serveur MCP
-│   ├── trello-client.ts   # Client API Trello avec gestion d'erreurs
-│   └── types.ts           # Définitions TypeScript
-├── build/                 # Code JavaScript compilé
-├── .env.example           # Template pour les variables d'environnement
-├── tsconfig.json          # Configuration TypeScript
-├── package.json           # Dépendances et scripts
+│   ├── index.ts                      # Point d'entrée (175 lignes, -90% vs v1.x)
+│   ├── trello-client.ts              # Client API Trello avec gestion d'erreurs
+│   ├── types.ts                      # Définitions TypeScript principales
+│   ├── logger.ts                     # Configuration Pino logging
+│   └── handlers/                     # 🆕 Architecture modulaire (v2.0.0)
+│       ├── types.ts                  # Interfaces ToolHandler, ValidationRule
+│       ├── base-handler.ts           # Classe abstraite avec validation
+│       ├── tool-registry.ts          # Registre central (Map-based)
+│       ├── index.ts                  # Registration des 33 handlers
+│       ├── boards-handlers.ts        # 2 handlers boards
+│       ├── lists-handlers.ts         # 2 handlers lists
+│       ├── cards-handlers.ts         # 11 handlers cards
+│       ├── labels-handlers.ts        # 5 handlers labels
+│       ├── dates-handlers.ts         # 4 handlers dates
+│       ├── checklists-handlers.ts    # 5 handlers checklists
+│       └── members-handlers.ts       # 4 handlers members
+├── build/                            # Code JavaScript compilé
+├── .env.example                      # Template pour les variables d'environnement
+├── tsconfig.json                     # Configuration TypeScript
+├── package.json                      # Dépendances et scripts
+├── CHANGELOG.md                      # Historique des versions
 └── README.md
 ```
+
+**🎯 Avantages de l'architecture v2.0.0** :
+- ✅ **Maintenabilité** : Code modulaire par domaine (boards, cards, labels, etc.)
+- ✅ **Extensibilité** : Ajout de nouveaux outils sans modifier index.ts
+- ✅ **Type Safety** : Génériques TypeScript `<TArgs, TResult>`
+- ✅ **Validation centralisée** : ValidationRule déclarative
+- ✅ **Performance** : Lookup O(1) via Map (vs 33 if-statements)
+- ✅ **DRY** : Duplication ~70% → ~5%
 
 ### Scripts disponibles
 
 ```bash
-npm run build      # Compile TypeScript → JavaScript
-npm run watch      # Compile en mode watch (développement)
-npm run dev        # Build + démarre le serveur
-npm run inspector  # Démarre avec MCP Inspector (debug)
-npm start          # Démarre le serveur (requiert build préalable)
+# Build & Développement
+npm run build         # Compile TypeScript → JavaScript
+npm run watch         # Compile en mode watch (développement)
+npm run dev           # Build + démarre le serveur
+npm run inspector     # Démarre avec MCP Inspector (debug)
+npm start             # Démarre le serveur (requiert build préalable)
+
+# Tests & Qualité (v2.0.0)
+npm test              # Execute les tests unitaires (36 tests)
+npm run test:watch    # Tests en mode watch
+npm run test:ui       # Interface UI pour les tests
+npm run test:coverage # Tests avec couverture de code
+npm run typecheck     # Vérifie les types sans compiler
+npm run lint          # Vérifie le code (ESLint)
+npm run lint:fix      # Corrige automatiquement les erreurs ESLint
+npm run format        # Formate le code (Prettier)
+
+# Bundle & Distribution
+npm run pack:mcpb     # Crée le bundle .mcpb pour distribution
+npm run clean         # Nettoie build/ node_modules/ *.mcpb
+npm run clean:build   # Nettoie uniquement build/
 ```
 
 ### Développement avec MCP Inspector
@@ -279,9 +337,11 @@ Ouvrez votre navigateur à l'URL affichée pour tester chaque outil.
 npm run dev
 
 # Le serveur affichera :
-# ✅ Trello MCP Server v1.0.0 démarré avec succès
-# 📋 12 outils disponibles: boards (2), lists (2), cards (8)
+# ✅ Trello MCP Server v2.0.0 démarré avec succès
+# 📋 33 outils disponibles: boards (2), lists (2), cards (11),
+#    labels (5), dates (4), checklists (5), members (4)
 # 🔐 Authentifié avec l'API Trello
+# 🏗️ Architecture: Handler Registry Pattern
 ```
 
 ---

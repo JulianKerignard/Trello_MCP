@@ -1,0 +1,30 @@
+# Build outputs
+build/
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+
+# Logs
+*.log
+
+# MCPB bundles
+*.mcpb
+manifest.json
+
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
