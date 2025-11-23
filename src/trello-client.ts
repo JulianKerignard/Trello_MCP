@@ -40,10 +40,19 @@ const HTTP_STATUS = {
   RATE_LIMIT: 429
 } as const;
 
+/**
+ * Simple in-memory cache with TTL
+ */
+interface CacheEntry<T> {
+  data: T;
+  expires: number;
+}
+
 export class TrelloClient {
   private axiosInstance: AxiosInstance;
   private apiKey: string;
   private apiToken: string;
+  private cache: Map<string, CacheEntry<any>> = new Map();
 
   constructor(apiKey: string, apiToken: string) {
     if (!apiKey || !apiToken) {
@@ -123,10 +132,35 @@ export class TrelloClient {
   }
 
   /**
-   * Get all boards accessible to the authenticated user
+   * Get cached data or fetch and cache it
+   * @private
+   */
+  private async getCached<T>(
+    key: string,
+    fetcher: () => Promise<T>,
+    ttlMs: number = 300000 // 5 minutes default
+  ): Promise<T> {
+    const cached = this.cache.get(key);
+    if (cached && cached.expires > Date.now()) {
+      logger.debug({ key }, 'Cache hit');
+      return cached.data as T;
+    }
+
+    logger.debug({ key, ttlMs }, 'Cache miss, fetching');
+    const data = await fetcher();
+    this.cache.set(key, { data, expires: Date.now() + ttlMs });
+    return data;
+  }
+
+  /**
+   * Get all boards accessible to the authenticated user (optimized with field selection)
    */
   async getBoards(): Promise<TrelloBoard[]> {
-    const response = await this.axiosInstance.get<TrelloBoard[]>('/members/me/boards');
+    const response = await this.axiosInstance.get<TrelloBoard[]>('/members/me/boards', {
+      params: {
+        fields: 'id,name,desc,url,closed' // Only fetch needed fields
+      }
+    });
     return response.data;
   }
 
@@ -196,10 +230,14 @@ export class TrelloClient {
   }
 
   /**
-   * Get all lists on a board
+   * Get all lists on a board (optimized with field selection)
    */
   async getLists(boardId: string): Promise<TrelloList[]> {
-    const response = await this.axiosInstance.get<TrelloList[]>(`/boards/${boardId}/lists`);
+    const response = await this.axiosInstance.get<TrelloList[]>(`/boards/${boardId}/lists`, {
+      params: {
+        fields: 'id,name,idBoard,closed,pos' // Only fetch needed fields
+      }
+    });
     return response.data;
   }
 
@@ -411,11 +449,17 @@ export class TrelloClient {
   // ========== Label Methods ==========
 
   /**
-   * Get all labels on a board
+   * Get all labels on a board (cached for 5 minutes)
    */
   async getLabels(boardId: string): Promise<TrelloLabel[]> {
-    const response = await this.axiosInstance.get<TrelloLabel[]>(`/boards/${boardId}/labels`);
-    return response.data;
+    return this.getCached(
+      `labels:${boardId}`,
+      async () => {
+        const response = await this.axiosInstance.get<TrelloLabel[]>(`/boards/${boardId}/labels`);
+        return response.data;
+      },
+      300000 // 5 minutes cache
+    );
   }
 
   /**
@@ -575,7 +619,14 @@ export class TrelloClient {
       percentage: number;
     };
   }> {
-    const card = await this.getCardDetails(cardId);
+    // Optimized: Only fetch checklists, not all card details (attachments, members, etc.)
+    const response = await this.axiosInstance.get<TrelloCard>(`/cards/${cardId}`, {
+      params: {
+        fields: 'id,name',
+        checklists: 'all'
+      }
+    });
+    const card = response.data;
 
     const checklistsProgress =
       card.checklists?.map((checklist) => {
@@ -611,12 +662,18 @@ export class TrelloClient {
   // ========== v1.10 - Members Management ==========
 
   /**
-   * Get all members of a board
+   * Get all members of a board (cached for 5 minutes)
    */
   async getBoardMembers(boardId: string): Promise<TrelloMember[]> {
-    const response = await this.axiosInstance.get(`/boards/${boardId}/members`);
-    logger.info({ boardId, memberCount: response.data.length }, 'Board members retrieved');
-    return response.data;
+    return this.getCached(
+      `members:${boardId}`,
+      async () => {
+        const response = await this.axiosInstance.get(`/boards/${boardId}/members`);
+        logger.info({ boardId, memberCount: response.data.length }, 'Board members retrieved');
+        return response.data;
+      },
+      300000 // 5 minutes cache
+    );
   }
 
   /**

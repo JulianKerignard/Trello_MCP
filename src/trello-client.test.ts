@@ -76,7 +76,9 @@ describe('TrelloClient', () => {
 
       const result = await client.getBoards();
 
-      expect(mockInstance.get).toHaveBeenCalledWith('/members/me/boards');
+      expect(mockInstance.get).toHaveBeenCalledWith('/members/me/boards', {
+        params: { fields: 'id,name,desc,url,closed' }
+      });
       expect(result).toEqual(mockBoards);
     });
 
@@ -178,7 +180,9 @@ describe('TrelloClient', () => {
 
       const result = await client.getLists('board1');
 
-      expect(mockInstance.get).toHaveBeenCalledWith('/boards/board1/lists');
+      expect(mockInstance.get).toHaveBeenCalledWith('/boards/board1/lists', {
+        params: { fields: 'id,name,idBoard,closed,pos' }
+      });
       expect(result).toEqual(mockLists);
     });
 
@@ -944,12 +948,8 @@ describe('TrelloClient', () => {
 
       expect(mockInstance.get).toHaveBeenCalledWith('/cards/card1', {
         params: {
-          fields: 'all',
-          members: 'true',
-          member_fields: 'fullName,username',
-          checklists: 'all',
-          attachments: 'true',
-          customFieldItems: 'true'
+          fields: 'id,name',
+          checklists: 'all'
         }
       });
       expect(result.checklists).toHaveLength(1);

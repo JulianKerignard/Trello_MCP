@@ -40,19 +40,15 @@ export class AddMemberToCardHandler extends BaseToolHandler<
   async execute(args: { cardId: string; memberId: string }): Promise<ToolResult> {
     this.validate(args);
 
-    // Get card details before assignment to display card name
-    const card = await this.trelloClient.getCard(args.cardId);
-
     // Add member to card (returns array of members)
     const members = await this.trelloClient.addMemberToCard(args.cardId, args.memberId);
     const addedMember = members[0]; // API returns array with added member
 
     const text =
       `👤 Membre assigné à la carte!\n\n` +
-      `Carte: ${card.name}\n` +
-      `Carte ID: ${card.id}\n` +
-      `Membre: ${addedMember.fullName} (@${addedMember.username})\n` +
-      `URL: ${card.url}`;
+      `Carte ID: ${args.cardId}\n` +
+      `Membre: ${addedMember.fullName} (@${addedMember.username})\n\n` +
+      `💡 Utilisez get_card_details pour voir tous les détails de la carte`;
 
     return this.formatResponse(text);
   }

@@ -1,6 +1,6 @@
 {
   "name": "mcp-trello-advanced",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "MCP Server for Trello API integration",
   "type": "module",
   "main": "build/index.js",
