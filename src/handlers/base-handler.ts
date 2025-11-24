@@ -54,11 +54,18 @@ export abstract class BaseToolHandler<TArgs = any, TResult = any>
       }
 
       // Check type
-      if (rule.type && typeof value !== rule.type) {
-        throw new ValidationError(
-          `Le paramètre "${rule.param}" doit être de type ${rule.type}.`,
-          rule.param
-        );
+      if (rule.type) {
+        if (rule.type === 'array' && !Array.isArray(value)) {
+          throw new ValidationError(
+            `Le paramètre "${rule.param}" doit être de type array.`,
+            rule.param
+          );
+        } else if (rule.type !== 'array' && typeof value !== rule.type) {
+          throw new ValidationError(
+            `Le paramètre "${rule.param}" doit être de type ${rule.type}.`,
+            rule.param
+          );
+        }
       }
 
       // Check exact length (for IDs)

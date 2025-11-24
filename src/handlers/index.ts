@@ -64,8 +64,25 @@ import {
   DeleteCardHandler,
   UnarchiveCardHandler,
   UpdateCardNameHandler,
-  GetCardDetailsHandler
+  GetCardDetailsHandler,
+  DuplicateCardHandler
 } from './cards-handlers.js';
+
+// Attachment handlers
+import {
+  AddAttachmentUrlHandler,
+  ListAttachmentsHandler,
+  DeleteAttachmentHandler,
+  SetCardCoverHandler
+} from './attachments-handlers.js';
+
+// Bulk operation handlers
+import {
+  BulkArchiveCardsHandler,
+  BulkMoveCardsHandler,
+  BulkAddLabelHandler,
+  BulkAssignMemberHandler
+} from './bulk-handlers.js';
 
 /**
  * Register all tool handlers with the registry
@@ -326,6 +343,64 @@ export function registerAllHandlers(registry: ToolRegistry, client: TrelloClient
     })
   );
 
+  // ========== Attachments (4 tools) ==========
+
+  registry.register(
+    'add_attachment_url',
+    new AddAttachmentUrlHandler(client, {
+      name: 'add_attachment_url',
+      category: 'attachments',
+      description: 'Ajoute un attachment à une carte via URL',
+      validation: [
+        { param: 'cardId', required: true, type: 'string', length: 24 },
+        {
+          param: 'url',
+          required: true,
+          type: 'string',
+          pattern: /^https?:\/\/.+/
+        },
+        { param: 'name', required: false, type: 'string' },
+        { param: 'setCover', required: false, type: 'boolean' }
+      ]
+    })
+  );
+
+  registry.register(
+    'list_attachments',
+    new ListAttachmentsHandler(client, {
+      name: 'list_attachments',
+      category: 'attachments',
+      description: "Liste tous les attachments d'une carte",
+      validation: [{ param: 'cardId', required: true, type: 'string', length: 24 }]
+    })
+  );
+
+  registry.register(
+    'delete_attachment',
+    new DeleteAttachmentHandler(client, {
+      name: 'delete_attachment',
+      category: 'attachments',
+      description: '⚠️ Supprime définitivement un attachment (irréversible)',
+      validation: [
+        { param: 'cardId', required: true, type: 'string', length: 24 },
+        { param: 'attachmentId', required: true, type: 'string', length: 24 }
+      ]
+    })
+  );
+
+  registry.register(
+    'set_card_cover',
+    new SetCardCoverHandler(client, {
+      name: 'set_card_cover',
+      category: 'attachments',
+      description: "Définit ou retire le cover d'une carte (via attachment)",
+      validation: [
+        { param: 'cardId', required: true, type: 'string', length: 24 },
+        { param: 'attachmentId', required: false, type: 'string', length: 24 }
+      ]
+    })
+  );
+
   // ========== Checklists (5 tools) ==========
 
   registry.register(
@@ -525,6 +600,80 @@ export function registerAllHandlers(registry: ToolRegistry, client: TrelloClient
       description:
         "Récupère tous les détails d'une carte (membres, labels, checklists, dates, pièces jointes, etc.)",
       validation: [{ param: 'cardId', required: true, type: 'string', length: 24 }]
+    })
+  );
+
+  registry.register(
+    'duplicate_card',
+    new DuplicateCardHandler(client, {
+      name: 'duplicate_card',
+      category: 'cards',
+      description: 'Duplique une carte avec options sélectives (attachments, checklists, labels, etc.)',
+      validation: [
+        { param: 'cardId', required: true, type: 'string', length: 24 },
+        { param: 'targetListId', required: true, type: 'string', length: 24 },
+        { param: 'keepAttachments', required: false, type: 'boolean' },
+        { param: 'keepChecklists', required: false, type: 'boolean' },
+        { param: 'keepComments', required: false, type: 'boolean' },
+        { param: 'keepLabels', required: false, type: 'boolean' },
+        { param: 'keepMembers', required: false, type: 'boolean' },
+        { param: 'keepDue', required: false, type: 'boolean' },
+        { param: 'newName', required: false, type: 'string', minLength: 1 },
+        { param: 'newDesc', required: false, type: 'string' },
+        { param: 'position', required: false, type: 'string', enum: ['top', 'bottom'] }
+      ]
+    })
+  );
+
+  // ========== Bulk Operations (4 tools) ==========
+
+  registry.register(
+    'bulk_archive_cards',
+    new BulkArchiveCardsHandler(client, {
+      name: 'bulk_archive_cards',
+      category: 'bulk',
+      description: 'Archive plusieurs cartes en une fois (batch processing avec rate limiting)',
+      validation: [{ param: 'cardIds', required: true, type: 'array' }]
+    })
+  );
+
+  registry.register(
+    'bulk_move_cards',
+    new BulkMoveCardsHandler(client, {
+      name: 'bulk_move_cards',
+      category: 'bulk',
+      description: 'Déplace plusieurs cartes vers une liste en une fois',
+      validation: [
+        { param: 'cardIds', required: true, type: 'array' },
+        { param: 'targetListId', required: true, type: 'string', length: 24 },
+        { param: 'position', required: false, type: 'string', enum: ['top', 'bottom'] }
+      ]
+    })
+  );
+
+  registry.register(
+    'bulk_add_label',
+    new BulkAddLabelHandler(client, {
+      name: 'bulk_add_label',
+      category: 'bulk',
+      description: 'Ajoute un label à plusieurs cartes en une fois',
+      validation: [
+        { param: 'cardIds', required: true, type: 'array' },
+        { param: 'labelId', required: true, type: 'string', length: 24 }
+      ]
+    })
+  );
+
+  registry.register(
+    'bulk_assign_member',
+    new BulkAssignMemberHandler(client, {
+      name: 'bulk_assign_member',
+      category: 'bulk',
+      description: 'Assigne un membre à plusieurs cartes en une fois',
+      validation: [
+        { param: 'cardIds', required: true, type: 'array' },
+        { param: 'memberId', required: true, type: 'string', length: 24 }
+      ]
     })
   );
 }

@@ -7,6 +7,126 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [2.1.0] - 2025-11-24
+
+### ✨ New Features - 3 MAJOR FEATURES
+
+#### 📎 Attachments Management (4 nouveaux outils)
+
+**Nouveaux outils** :
+- `add_attachment_url` : Ajouter un attachment par URL avec option setCover
+- `list_attachments` : Lister tous les attachments d'une carte
+- `delete_attachment` : Supprimer définitivement un attachment (irréversible)
+- `set_card_cover` : Définir ou retirer le cover d'une carte
+
+**Détails** :
+- Support URLs externes (10 MB gratuit, 250 MB Premium/Enterprise)
+- Stockage Amazon S3 (suppression définitive)
+- Métadonnées complètes (mimeType, bytes, previews)
+- Types `TrelloAttachment` déjà existants réutilisés
+- Validation URL avec pattern regex
+- Messages formatés avec taille human-readable
+
+**Fichiers** :
+- `src/trello-client.ts` : 4 nouvelles méthodes (addAttachmentUrl, getAttachments, deleteAttachment, setCardCover)
+- `src/handlers/attachments-handlers.ts` : 4 nouveaux handlers
+- Helper `formatBytes()` pour affichage taille
+
+---
+
+#### 🔁 Card Duplication (1 nouvel outil)
+
+**Nouvel outil** :
+- `duplicate_card` : Dupliquer une carte avec contrôle granulaire
+
+**Options supportées** :
+- `keepAttachments`, `keepChecklists`, `keepComments`
+- `keepLabels`, `keepMembers`, `keepDue`
+- `newName`, `newDesc`, `position` (top/bottom)
+- Combine plusieurs options via API Trello `keepFromSource`
+
+**Détails** :
+- Construction dynamique du paramètre `keepFromSource`
+- Support position dans la liste cible
+- Override nom et description optionnel
+- Message formaté avec checklist des éléments copiés
+- ⚠️ Note : Custom fields Enterprise non copiés (limitation API Trello)
+
+**Fichiers** :
+- `src/trello-client.ts` : Méthode `duplicateCard()`
+- `src/handlers/cards-handlers.ts` : Handler `DuplicateCardHandler`
+
+---
+
+#### 📦 Bulk Operations (4 nouveaux outils)
+
+**Nouveaux outils** :
+- `bulk_archive_cards` : Archiver plusieurs cartes en masse
+- `bulk_move_cards` : Déplacer plusieurs cartes vers une liste
+- `bulk_add_label` : Ajouter un label à plusieurs cartes
+- `bulk_assign_member` : Assigner un membre à plusieurs cartes
+
+**Features avancées** :
+- **Rate limiting intelligent** : Respect des limites Trello (100 req/10s)
+- **Batch processing** : 80 cartes/batch par défaut (configurable)
+- **Error handling** : Retourne `{ success, failed, errors[] }` pour audit complet
+- **Delay configurable** : 2s entre batches par défaut
+- **Warning auto** : Alerte si > 200 cartes (temps d'exécution)
+- **Logging détaillé** : Progression batch par batch
+
+**Architecture** :
+- **RateLimiter class** : Gestion fenêtre glissante 10s
+  - Tracking précis des requêtes
+  - Auto-reset après expiration fenêtre
+  - Safety margin 100ms
+  - Méthode `getStats()` pour monitoring
+- **TrelloClient.executeBulkOperations()** : Wrapper générique
+- **Pattern commun** : Tous les bulk handlers partagent la même logique
+
+**Fichiers** :
+- `src/utils/rate-limiter.ts` : Classe RateLimiter avec batch support
+- `src/handlers/bulk-handlers.ts` : 4 handlers bulk operations
+- `src/trello-client.ts` : Méthode `executeBulkOperations()`, intégration RateLimiter
+
+---
+
+### 🏗️ Technical Improvements
+
+**Architecture** :
+- Nouveau dossier `src/utils/` pour utilitaires réutilisables
+- Import RateLimiter dans TrelloClient constructor
+- Pattern générique pour bulk operations (DRY)
+- Messages formatés avec statistiques détaillées
+
+**Performance** :
+- Rate limiting automatique sur toutes bulk ops
+- Batch processing parallèle (Promise.all)
+- Delay entre batches pour éviter saturation
+- Warning si opération > 200 cartes
+
+**Testing** :
+- Structure prête pour tests unitaires (utils/rate-limiter.test.ts)
+- Validation patterns URL pour attachments
+- Error handling exhaustif dans bulk ops
+
+---
+
+### 📊 Impact Global
+
+**Nouveaux outils** : 33 → 42 (+9, +27%)
+**Catégories** : 6 → 8 (ajout `attachments`, `bulk`)
+**Couverture API Trello** : ~60% → ~75%
+**Use cases supportés** :
+- Gestion complète attachments (images, docs, links)
+- Templates de cartes via duplication
+- Nettoyage massif de boards
+- Réorganisation en masse
+- Labeling/assignation groupée
+
+**Breaking changes** : 0 (backward compatible)
+
+---
+
 ## [2.0.2] - 2025-11-22
 
 ### ⚡ Performance Optimizations

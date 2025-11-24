@@ -13,7 +13,9 @@ export type ToolCategory =
   | 'labels'
   | 'dates'
   | 'checklists'
-  | 'members';
+  | 'members'
+  | 'attachments'
+  | 'bulk';
 
 /**
  * Standard MCP tool result format

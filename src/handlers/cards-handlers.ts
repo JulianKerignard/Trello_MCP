@@ -308,3 +308,68 @@ export class GetCardDetailsHandler extends BaseToolHandler<{ cardId: string }, T
     return this.formatResponse(output);
   }
 }
+
+/**
+ * Handler: Duplicate a card
+ */
+export class DuplicateCardHandler extends BaseToolHandler<
+  {
+    cardId: string;
+    targetListId: string;
+    keepAttachments?: boolean;
+    keepChecklists?: boolean;
+    keepComments?: boolean;
+    keepLabels?: boolean;
+    keepMembers?: boolean;
+    keepDue?: boolean;
+    newName?: string;
+    newDesc?: string;
+    position?: 'top' | 'bottom';
+  },
+  TrelloCard
+> {
+  async execute(args: {
+    cardId: string;
+    targetListId: string;
+    keepAttachments?: boolean;
+    keepChecklists?: boolean;
+    keepComments?: boolean;
+    keepLabels?: boolean;
+    keepMembers?: boolean;
+    keepDue?: boolean;
+    newName?: string;
+    newDesc?: string;
+    position?: 'top' | 'bottom';
+  }): Promise<ToolResult> {
+    this.validate(args);
+
+    const newCard = await this.trelloClient.duplicateCard(args.cardId, args.targetListId, {
+      keepAttachments: args.keepAttachments,
+      keepChecklists: args.keepChecklists,
+      keepComments: args.keepComments,
+      keepLabels: args.keepLabels,
+      keepMembers: args.keepMembers,
+      keepDue: args.keepDue,
+      newName: args.newName,
+      newDesc: args.newDesc,
+      position: args.position
+    });
+
+    const text =
+      `🔁 Carte dupliquée avec succès!\n\n` +
+      `Carte source: ${args.cardId}\n` +
+      `Nouvelle carte: ${newCard.name}\n` +
+      `URL: ${newCard.url}\n` +
+      `Liste de destination: ${args.targetListId}\n\n` +
+      `📋 Éléments copiés:\n` +
+      `${args.keepAttachments ? '✅' : '❌'} Attachments\n` +
+      `${args.keepChecklists ? '✅' : '❌'} Checklists\n` +
+      `${args.keepComments ? '✅' : '❌'} Comments\n` +
+      `${args.keepLabels ? '✅' : '❌'} Labels\n` +
+      `${args.keepMembers ? '✅' : '❌'} Members\n` +
+      `${args.keepDue ? '✅' : '❌'} Due date\n\n` +
+      `💡 Utilisez get_card_details pour voir tous les détails`;
+
+    return this.formatResponse(text);
+  }
+}

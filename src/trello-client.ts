@@ -5,6 +5,7 @@
 
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { createChildLogger, logError } from './logger.js';
+import { RateLimiter } from './utils/rate-limiter.js';
 import type {
   TrelloBoard,
   TrelloList,
@@ -16,7 +17,8 @@ import type {
   TrelloSearchResult,
   CardPosition,
   TrelloChecklist,
-  TrelloCheckItem
+  TrelloCheckItem,
+  TrelloAttachment
 } from './types.js';
 
 const logger = createChildLogger({ module: 'TrelloClient' });
@@ -53,6 +55,7 @@ export class TrelloClient {
   private apiKey: string;
   private apiToken: string;
   private cache: Map<string, CacheEntry<any>> = new Map();
+  private rateLimiter: RateLimiter;
 
   constructor(apiKey: string, apiToken: string) {
     if (!apiKey || !apiToken) {
@@ -66,6 +69,7 @@ export class TrelloClient {
 
     this.apiKey = apiKey;
     this.apiToken = apiToken;
+    this.rateLimiter = new RateLimiter(100); // 100 req/10s (Trello token limit)
 
     logger.info(
       {
@@ -731,5 +735,156 @@ export class TrelloClient {
     logger.info({ memberId, boardId, cardCount: cards.length }, 'Member cards retrieved');
 
     return cards;
+  }
+
+  // ========== ATTACHMENTS ==========
+
+  /**
+   * Add an attachment to a card via URL
+   */
+  async addAttachmentUrl(
+    cardId: string,
+    url: string,
+    name?: string,
+    setCover?: boolean
+  ): Promise<TrelloAttachment> {
+    const response = await this.axiosInstance.post<TrelloAttachment>(
+      `/cards/${cardId}/attachments`,
+      null,
+      {
+        params: {
+          url,
+          name,
+          setCover: setCover || false
+        }
+      }
+    );
+    logger.info({ cardId, url, name, setCover }, 'Attachment added to card');
+    return response.data;
+  }
+
+  /**
+   * Get all attachments on a card
+   */
+  async getAttachments(cardId: string): Promise<TrelloAttachment[]> {
+    const response = await this.axiosInstance.get<TrelloAttachment[]>(
+      `/cards/${cardId}/attachments`
+    );
+    logger.info({ cardId, attachmentCount: response.data.length }, 'Attachments retrieved');
+    return response.data;
+  }
+
+  /**
+   * Delete an attachment from a card
+   */
+  async deleteAttachment(cardId: string, attachmentId: string): Promise<void> {
+    await this.axiosInstance.delete(`/cards/${cardId}/attachments/${attachmentId}`);
+    logger.info({ cardId, attachmentId }, 'Attachment deleted from card');
+  }
+
+  /**
+   * Set or remove card cover (using attachment)
+   * @param attachmentId - The attachment ID to use as cover, or null to remove cover
+   */
+  async setCardCover(cardId: string, attachmentId: string | null): Promise<TrelloCard> {
+    const response = await this.axiosInstance.put<TrelloCard>(`/cards/${cardId}`, null, {
+      params: {
+        idAttachmentCover: attachmentId || null
+      }
+    });
+    logger.info({ cardId, attachmentId }, attachmentId ? 'Card cover set' : 'Card cover removed');
+    return response.data;
+  }
+
+  // ========== DUPLICATE CARD ==========
+
+  /**
+   * Duplicate a card with selective options
+   */
+  async duplicateCard(
+    cardId: string,
+    targetListId: string,
+    options?: {
+      keepAttachments?: boolean;
+      keepChecklists?: boolean;
+      keepComments?: boolean;
+      keepLabels?: boolean;
+      keepMembers?: boolean;
+      keepDue?: boolean;
+      newName?: string;
+      newDesc?: string;
+      position?: 'top' | 'bottom' | number;
+    }
+  ): Promise<TrelloCard> {
+    // Build keepFromSource parameter dynamically
+    const keepParts: string[] = [];
+    if (options?.keepAttachments) keepParts.push('attachments');
+    if (options?.keepChecklists) keepParts.push('checklists');
+    if (options?.keepComments) keepParts.push('comments');
+    if (options?.keepLabels) keepParts.push('labels');
+    if (options?.keepMembers) keepParts.push('members');
+    if (options?.keepDue) keepParts.push('due');
+
+    const keepFromSource = keepParts.length > 0 ? keepParts.join(',') : 'none';
+
+    const response = await this.axiosInstance.post<TrelloCard>('/cards', null, {
+      params: {
+        idCardSource: cardId,
+        idList: targetListId,
+        keepFromSource,
+        name: options?.newName,
+        desc: options?.newDesc,
+        pos: options?.position
+      }
+    });
+
+    logger.info(
+      {
+        cardId,
+        targetListId,
+        keepFromSource,
+        newCardId: response.data.id
+      },
+      'Card duplicated successfully'
+    );
+
+    return response.data;
+  }
+
+  // ========== BULK OPERATIONS ==========
+
+  /**
+   * Execute bulk operations with rate limiting
+   * @param operations - Array of async operations to execute
+   * @param options - Batch configuration options
+   */
+  async executeBulkOperations<T>(
+    operations: Array<() => Promise<T>>,
+    options?: {
+      batchSize?: number;
+      delayBetweenBatchesMs?: number;
+    }
+  ): Promise<T[]> {
+    const batchSize = options?.batchSize || 80;
+    const delay = options?.delayBetweenBatchesMs || 2000;
+
+    logger.info(
+      {
+        totalOps: operations.length,
+        batchSize,
+        delay
+      },
+      'Executing bulk operations'
+    );
+
+    // Warn if large operation
+    if (operations.length > 200) {
+      logger.warn(
+        { count: operations.length },
+        'Large bulk operation may take several minutes'
+      );
+    }
+
+    return this.rateLimiter.executeBatch(operations, batchSize, delay);
   }
 }

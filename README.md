@@ -29,8 +29,9 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 - **🤖 Automatisation naturelle** : Demandez à Claude de gérer Trello pour vous
 - **🔒 Sécurisé** : Vos credentials restent locaux
 - **⚡ Rapide** : TypeScript compilé pour des performances optimales
-- **🎨 Flexible** : 33 outils couvrant tous les besoins essentiels
+- **🎨 Flexible** : 42 outils couvrant tous les besoins essentiels
 - **🏗️ Architecture moderne** : Pattern Factory + Registry pour maintenabilité optimale (v2.0.0)
+- **🚀 Nouveautés v2.1.0** : Attachments, duplication de cartes, opérations en masse
 
 ---
 
@@ -50,7 +51,7 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 | `list_trello_lists` | Liste les colonnes d'un board |
 | `create_trello_list` | Crée une nouvelle colonne |
 
-### 🎯 Gestion des Cards (11 outils)
+### 🎯 Gestion des Cards (12 outils)
 
 | Outil | Description |
 |-------|-------------|
@@ -65,6 +66,7 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 | `archive_card` | Archive une carte (réversible) |
 | `unarchive_card` | Désarchive une carte |
 | `delete_card` | Supprime définitivement ⚠️ |
+| `duplicate_card` | Duplique une carte avec options sélectives |
 
 ### 🏷️ Gestion des Labels (5 outils)
 
@@ -103,6 +105,26 @@ Trello MCP Server est un serveur [Model Context Protocol](https://modelcontextpr
 | `add_member_to_card` | Assigne un membre à une carte |
 | `remove_member_from_card` | Retire l'assignation d'un membre |
 | `get_member_cards` | Liste les cartes assignées à un membre |
+
+### 📎 Gestion des Attachments (4 outils) 🆕
+
+| Outil | Description |
+|-------|-------------|
+| `add_attachment_url` | Ajoute un attachment par URL |
+| `list_attachments` | Liste tous les attachments d'une carte |
+| `delete_attachment` | Supprime un attachment définitivement ⚠️ |
+| `set_card_cover` | Définit ou retire le cover d'une carte |
+
+### 📦 Opérations en Masse (4 outils) 🆕
+
+| Outil | Description |
+|-------|-------------|
+| `bulk_archive_cards` | Archive plusieurs cartes en une fois |
+| `bulk_move_cards` | Déplace plusieurs cartes vers une liste |
+| `bulk_add_label` | Ajoute un label à plusieurs cartes |
+| `bulk_assign_member` | Assigne un membre à plusieurs cartes |
+
+**Total : 42 outils** (33 → 42 en v2.1.0)
 
 ---
 
